@@ -2,6 +2,27 @@
 #ifndef CLASSES_H
 #define CLASSES_H
 
+//#include <stdio.h>
+//#include <cmath>
+//#include <iostream>
+//#include <algorithm>
+//#include <string>
+//#include "sphere.h"
+//#include "triangle.h"
+//#include "functions.h"
+//#include <vector>
+
+#include <vector>
+#include <cmath>
+
+#define M_PI 3.14159265358979323846
+
+struct Vec2 {
+	float x, y;
+	Vec2(float xI = 0.0, float yI = 0.0) : x(xI), y(yI) {
+	}
+};
+
 struct Vec3 {
 	float x, y, z;
 	Vec3 operator+(const Vec3& other) const; //operator overloads
@@ -9,7 +30,7 @@ struct Vec3 {
 	Vec3 operator*(float scalar) const; //scalar
 	Vec3 operator-() const;
 	Vec3 operator/(float scalar) const;
-	Vec3(float xi = 1.0, float yi = 2.0, float zi = 3.0) : x(xi), y(yi), z(zi) { //default constructor
+	Vec3(float xi = 0.0, float yi = 0.0, float zi = 0.0) : x(xi), y(yi), z(zi) { //default constructor
 	}
 };
 
@@ -56,6 +77,17 @@ typedef struct AttLightType : LightType { // inherit from the light class
 	}
 };
 
+struct TextureType {
+	int width, height, maxValue;
+	Vec3** textureArray;
+	TextureType(int widthI = 0, int heightI = 0, int maxValueI = 0) : width(widthI), height(heightI), maxValue(maxValueI) {
+		this->textureArray = new Vec3 *[width];
+		for (int i = 0; i < width; i++) {
+			this->textureArray[i] = new Vec3[height];
+		}
+	}
+};
+
 struct MaterialType { //type for storing material properties
 	Vec3 od, os;
 	float ka, kd, ks;
@@ -64,13 +96,6 @@ struct MaterialType { //type for storing material properties
 	}
 };
 
-struct SphereType {
-	float radius;
-	Vec3 position;
-	MaterialType m;
-	SphereType(Vec3 pos = Vec3(), float rad = 0, MaterialType mI = MaterialType()) : position(pos), radius(rad), m(mI) {
-	}
-};
 
 struct DepthCueType {
 	Vec3 dc;
@@ -80,19 +105,4 @@ struct DepthCueType {
 	}
 };
 
-struct SceneType {
-	Vec3 eyePosition, upDirection, viewDirection, backgroundColor;
-	FovType fov;
-	ISizeType imageSize;
-	ViewingWindowType viewingWindow;
-	LightType lights[50];
-	int lightCount = 0;
-	SphereType spheres[50];
-	int sphereCount = 0;
-	AttLightType attLights[50];
-	int attLightCount = 0;
-	DepthCueType depthCue;
-};
-
-
-#endif CLASSES_H
+#endif //CLASSES_H

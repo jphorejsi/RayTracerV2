@@ -1,13 +1,21 @@
 //Includes
-#include "functions.h"
-#include <fstream>
-#include <sstream>
+//#include "sphere.h"
+//#include "triangle.h"
+//#
+//#include <fstream>
+//#include <sstream>
+
 #include <iostream>
+#include <fstream>
+#include <string>
+#include <cmath>
+#include <algorithm>
+#include <tuple>
+#include "functions.h"
+#include "classes.h"
 
 //global
 SceneType scene;
-
-#define M_PI 3.14159265358979323846
 
 float depthCueing(DepthCueType depthCue, Vec3 intersectionPoint, Vec3 eye) {
     float alpha = 1.0;
@@ -31,7 +39,7 @@ float lightAttenuation(Vec3 intersectionPoint, AttLightType attLight) {
 
 int shadowStatus(Vec3 intersectionPoint, Vec3 L, int objectNumber, float lightDistance) {
     float xc, yc, zc, B, C, disc, t1, t2;
-    for (int i = 0; i < scene.sphereCount; i++) {
+    for (int i = 0; i < scene.spheres.size(); i++) {
         if (i != objectNumber) {
             xc = intersectionPoint.x - scene.spheres[i].position.x;
             yc = intersectionPoint.y - scene.spheres[i].position.y;
@@ -63,31 +71,41 @@ Vec3 phongLighting(SceneType scene, RayType ray, LightType light, int objectNumb
         lightDistance = sqrt(pow(light.position.x - intersectionPoint.x, 2) + pow(light.position.y - intersectionPoint.y, 2) + pow(light.position.z - intersectionPoint.z, 2));
     }
     Vec3 H = normalize(L + v);
-    Vec3 diffuse = scene.spheres[objectNumber].m.od * scene.spheres[objectNumber].m.kd * (std::max(float(0), dot(N, L)));
-    Vec3 specular = scene.spheres[objectNumber].m.os * scene.spheres[objectNumber].m.ks * pow(std::max(float(0), dot(N, H)), scene.spheres[objectNumber].m.n);
+    //Vec3 diffuse = scene.spheres[objectNumber].m.od * scene.spheres[objectNumber].m.kd * (std::max(float(0), dot(N, L)));
+    //Vec3 specular = scene.spheres[objectNumber].m.os * scene.spheres[objectNumber].m.ks * pow(std::max(float(0), dot(N, H)), scene.spheres[objectNumber].m.n);
+    Vec3 diffuse = scene.materials[scene.spheres[objectNumber].materialId].od * scene.materials[scene.spheres[objectNumber].materialId].kd * (std::max(float(0), dot(N, L)));
+    Vec3 specular = scene.materials[scene.spheres[objectNumber].materialId].os * scene.materials[scene.spheres[objectNumber].materialId].ks * pow(std::max(float(0), dot(N, H)), scene.materials[scene.spheres[objectNumber].materialId].n);
     Vec3 newVec = diffuse + specular;
     newVec.x = newVec.x * light.color.x; newVec.y = newVec.y * light.color.y; newVec.z = newVec.z * light.color.z;
     return newVec * float(shadowStatus(intersectionPoint, L, objectNumber, lightDistance));
 
 }
 
-Vec3 shadeRay(SceneType scene, int objectNumber, Vec3 intersectionPoint, RayType ray) {
+Vec3 shadeRay(SceneType scene, std::string objectType, int objectNumber, Vec3 intersectionPoint, RayType ray) {
     Vec3 L, H, v, N, newVec, diffuse, specular, sum;
     float f = 1.0f;
-    sum = scene.spheres[objectNumber].m.od * scene.spheres[objectNumber].m.ka;  //calculate ambient
+    MaterialType material = getMaterial(scene, objectType, objectNumber);
+    //sum = scene.spheres[objectNumber].m.od * scene.spheres[objectNumber].m.ka;  //calculate ambient
+    if (isTextured(scene, objectType, objectNumber)) {
+        material.od = getOd(scene, objectType, objectNumber, intersectionPoint);
+        if (objectType == "Sphere") {
+            scene.materials[scene.spheres[objectNumber].materialId].od = material.od;
+        }
+    }
+
+    sum = material.od * material.ka;
+
     v = normalize(ray.direction * -1);
     N = normalize((intersectionPoint - scene.spheres[objectNumber].position) / scene.spheres[objectNumber].radius);
-    for (int i = 0; i < scene.lightCount; i++) {
+    for (int i = 0; i < scene.lights.size(); i++) {
         sum = sum + phongLighting(scene, ray, scene.lights[i], objectNumber, intersectionPoint, N, v);
     }
-    for (int i = 0; i < scene.attLightCount; i++) {
+    for (int i = 0; i < scene.attLights.size(); i++) {
         if (scene.attLights[i].type == 1) {
             f = lightAttenuation(intersectionPoint, scene.attLights[i]);
         }
         sum = sum + phongLighting(scene, ray, scene.attLights[i], objectNumber, intersectionPoint, N, v) * f;
     }
-
-
     sum.x = std::min(1.0f, sum.x); sum.y = std::min(1.0f, sum.y); sum.z = std::min(1.0f, sum.z); //Clamp to 1.0
     if (scene.depthCue.enabled == true) {
         float dcf = depthCueing(scene.depthCue, intersectionPoint, scene.eyePosition);
@@ -104,7 +122,7 @@ Vec3 traceRay(SceneType scene, RayType ray) {
     SphereType sphere;
     Vec3 intersectionPoint;
     min_d = FLT_MAX;
-    for (int i = 0; i < scene.sphereCount; i++) {
+    for (int i = 0; i < scene.spheres.size(); i++) {
         sphere = scene.spheres[i];
         float xc = ray.position.x - sphere.position.x;
         float yc = ray.position.y - sphere.position.y;
@@ -128,7 +146,7 @@ Vec3 traceRay(SceneType scene, RayType ray) {
     }
     if (current_obj != -1) {
         intersectionPoint = ray.direction * min_d + ray.position;
-        return shadeRay(scene, current_obj, intersectionPoint, ray);
+        return shadeRay(scene, "Sphere", current_obj, intersectionPoint, ray);
     }
     return scene.backgroundColor;
 }
@@ -137,21 +155,16 @@ Vec3 traceRay(SceneType scene, RayType ray) {
 
 //parse to globals function
 int parse(std::string filename) {
-    std::ifstream file;
-    file.open(filename);
-    if (file.fail()) {
-        std::cout << "file fail\n";
+    std::ifstream file(filename, std::ios::in | std::ios::binary);
+    if (!file.is_open()) {
         return 0;
     }
-    if (filename.substr(filename.size() - 4) != ".txt") {
-        std::cout << "not a text file!\n";
-        return 0;
-    }
+
     std::string subs;
     std::stringstream buffer;
     buffer << file.rdbuf();
     std::string str_param[10];
-    MaterialType newMaterial;
+
     while (buffer >> subs) {
         if (subs == "eye") {
             buffer >> str_param[0] >> str_param[1] >> str_param[2];
@@ -179,27 +192,39 @@ int parse(std::string filename) {
         }
         else if (subs == "mtlcolor") {
             buffer >> str_param[0] >> str_param[1] >> str_param[2] >> str_param[3] >> str_param[4] >> str_param[5] >> str_param[6] >> str_param[7] >> str_param[8] >> str_param[9];
-            newMaterial = MaterialType(Vec3(std::stof(str_param[0]), std::stof(str_param[1]), std::stof(str_param[2])), Vec3(std::stof(str_param[3]), std::stof(str_param[4]), std::stof(str_param[5])), std::stof(str_param[6]), std::stof(str_param[7]), std::stof(str_param[8]), std::stof(str_param[9]));
+            scene.materials.push_back(MaterialType(Vec3(std::stof(str_param[0]), std::stof(str_param[1]), std::stof(str_param[2])), Vec3(std::stof(str_param[3]), std::stof(str_param[4]), std::stof(str_param[5])), std::stof(str_param[6]), std::stof(str_param[7]), std::stof(str_param[8]), std::stof(str_param[9])));
         }
         else if (subs == "sphere") {
             buffer >> str_param[0] >> str_param[1] >> str_param[2] >> str_param[3];
-            scene.spheres[scene.sphereCount] = SphereType(Vec3(std::stof(str_param[0]), std::stof(str_param[1]), std::stof(str_param[2])), std::stof(str_param[3]), newMaterial);
-            scene.sphereCount++;
+            scene.spheres.push_back(SphereType(Vec3(std::stof(str_param[0]), std::stof(str_param[1]), std::stof(str_param[2])), std::stof(str_param[3]), scene.materials.size() - 1, scene.textures.size() - 1));   //if -1 no material or texture material cannot be -1 texture can
         }
         else if (subs == "light") {
             buffer >> str_param[0] >> str_param[1] >> str_param[2] >> str_param[3] >> str_param[4] >> str_param[5] >> str_param[6];
-            scene.lights[scene.lightCount] = LightType(Vec3(std::stof(str_param[0]), std::stof(str_param[1]), std::stof(str_param[2])), std::stof(str_param[3]), Vec3(std::stof(str_param[4]), std::stof(str_param[5]), std::stof(str_param[6])));
-            scene.lightCount++;
+            scene.lights.push_back(LightType(Vec3(std::stof(str_param[0]), std::stof(str_param[1]), std::stof(str_param[2])), std::stof(str_param[3]), Vec3(std::stof(str_param[4]), std::stof(str_param[5]), std::stof(str_param[6]))));
         }
         else if (subs == "attlight") {
             buffer >> str_param[0] >> str_param[1] >> str_param[2] >> str_param[3] >> str_param[4] >> str_param[5] >> str_param[6] >> str_param[7] >> str_param[8] >> str_param[9];
-            scene.attLights[scene.attLightCount] = AttLightType(Vec3(std::stof(str_param[0]), std::stof(str_param[1]), std::stof(str_param[2])), std::stof(str_param[3]), Vec3(std::stof(str_param[4]), std::stof(str_param[5]), std::stof(str_param[6])), std::stof(str_param[7]), std::stof(str_param[8]), std::stof(str_param[9]));
-            scene.attLightCount++;
+            scene.attLights.push_back(AttLightType(Vec3(std::stof(str_param[0]), std::stof(str_param[1]), std::stof(str_param[2])), std::stof(str_param[3]), Vec3(std::stof(str_param[4]), std::stof(str_param[5]), std::stof(str_param[6])), std::stof(str_param[7]), std::stof(str_param[8]), std::stof(str_param[9])));
         }
         else if (subs == "depthcueing") {
             buffer >> str_param[0] >> str_param[1] >> str_param[2] >> str_param[3] >> str_param[4] >> str_param[5] >> str_param[6];
             scene.depthCue = DepthCueType(Vec3(std::stof(str_param[0]), std::stof(str_param[1]), std::stof(str_param[2])), std::stof(str_param[3]), std::stof(str_param[4]), std::stof(str_param[5]), std::stof(str_param[6]));
             scene.depthCue.enabled = true;
+        }
+        else if (subs == "texture") {
+            buffer >> str_param[0]; //filename
+            std::ifstream textureBuffer(str_param[0], std::ios::in | std::ios::binary);
+            textureBuffer >> str_param[0] >> str_param[0] >> str_param[1] >> str_param[2];
+            TextureType texture = TextureType(stoi(str_param[0]), stoi(str_param[1]), stoi(str_param[2]));
+            for (int j = 0; j < texture.height; j++) {
+                for (int i = 0; i < texture.width; i++) {
+                    textureBuffer >> str_param[0] >> str_param[1] >> str_param[2];
+                    texture.textureArray[i][j].x = stoi(str_param[0]) * 1.0f / texture.maxValue; //r
+                    texture.textureArray[i][j].y = stoi(str_param[1]) * 1.0f / texture.maxValue; //g
+                    texture.textureArray[i][j].z = stoi(str_param[2]) * 1.0f / texture.maxValue; //b
+                }
+            }
+            scene.textures.push_back(texture);
         }
     }
     return 1;
@@ -242,7 +267,8 @@ int raycast(std::string filename) {
     ray.position = scene.eyePosition;
     for (int j = 0; j < scene.imageSize.height; j++) {  // 4. for each pixel in the output image
         for (int i = 0; i < scene.imageSize.width; i++) {
-            //if (i == 159 && j == 424) {
+            //if (i == 330 && j == 180) {
+            //std::cout << i << " " << j << std::endl;
             point = scene.viewingWindow.ul + deltaH * (float)i + deltaV * (float)j;
             ray.direction = normalize(point - scene.eyePosition);
             vecColor = traceRay(scene, ray);

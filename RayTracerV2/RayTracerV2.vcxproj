@@ -130,13 +130,23 @@
     <ClCompile Include="classes.cpp" />
     <ClCompile Include="functions.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="sphere.cpp" />
+    <ClCompile Include="triangle.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="classes.h" />
     <ClInclude Include="functions.h" />
+    <ClInclude Include="scene.h" />
+    <ClInclude Include="sphere.h" />
+    <ClInclude Include="triangle.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="test.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="earthtexture.ppm" />
+    <None Include="test.ppm" />
+    <None Include="world.ppm" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

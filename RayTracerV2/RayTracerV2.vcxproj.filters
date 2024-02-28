@@ -24,6 +24,12 @@
     <ClCompile Include="classes.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="sphere.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="triangle.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="classes.h">
@@ -32,8 +38,22 @@
     <ClInclude Include="functions.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="triangle.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="scene.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="sphere.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="test.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="world.ppm" />
+    <None Include="test.ppm" />
+    <None Include="earthtexture.ppm" />
   </ItemGroup>
 </Project>
