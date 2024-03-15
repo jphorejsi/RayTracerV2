@@ -17,10 +17,8 @@ float magnitude(const Vec3& v);
 Vec3 normalize(Vec3 v);
 float dot(Vec3 u, Vec3 v);
 float distance(Vec3 u, Vec3 v);
-bool isTextured(SceneType scene, std::string objectType, int objectNumber);
 MaterialType getMaterial(SceneType scene, std::string objectType, int objectNumber);
-Vec2 getTextureCoordinate(SceneType scene, std::string objectType, int objectNumber, Vec3 intersectionPoint);
-TextureType getTexture(SceneType scene, std::string objectType, int objectNumber);
-Vec3 getOd(SceneType scene, std::string objectType, int objectNumber, Vec3 intersectionPoint);
+std::tuple<std::string, int, float> intersectionCheck(SceneType scene, RayType ray, int exclusion);
+float depthCueing(SceneType scene, DepthCueType depthCue, Vec3 intersectionPoint, Vec3 eye);
 
 #endif //FUNCTIONS_H

@@ -129,15 +129,20 @@
   <ItemGroup>
     <ClCompile Include="classes.cpp" />
     <ClCompile Include="functions.cpp" />
+    <ClCompile Include="lightfunctions.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="sphere.cpp" />
+    <ClCompile Include="texturefunctions.cpp" />
     <ClCompile Include="triangle.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="bump.h" />
     <ClInclude Include="classes.h" />
     <ClInclude Include="functions.h" />
+    <ClInclude Include="lightfunctions.h" />
     <ClInclude Include="scene.h" />
     <ClInclude Include="sphere.h" />
+    <ClInclude Include="texturefunctions.h" />
     <ClInclude Include="triangle.h" />
   </ItemGroup>
   <ItemGroup>

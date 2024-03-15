@@ -11,6 +11,7 @@
 #include "classes.h"
 #include "sphere.h"
 #include "triangle.h"
+#include "bump.h"
 
 struct TriangleType;
 
@@ -28,6 +29,7 @@ struct SceneType {
 	std::vector<Vec3> vertices;
 	std::vector<Vec3> normalVerticies;
 	std::vector<Vec2> textureCordinates;
+	std::vector<BumpType> bumps; //to be changed
 	DepthCueType depthCue;
 };
 

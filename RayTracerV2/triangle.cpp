@@ -23,7 +23,7 @@ Vec3 TriangleType::barycentric(SceneType scene, Vec3 intersectionPoint) {
 }
 
 Vec3 TriangleType::normal(SceneType scene, Vec3 intersectionPoint) {
-	if (this->smoothShaded) {
+	if (!this->smoothShaded) {
 		Vec3 p0 = scene.vertices[this->v0Index - 1];
 		Vec3 p1 = scene.vertices[this->v1Index - 1];
 		Vec3 p2 = scene.vertices[this->v2Index - 1];
