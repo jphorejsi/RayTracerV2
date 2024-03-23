@@ -127,7 +127,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="classes.cpp" />
     <ClCompile Include="functions.cpp" />
     <ClCompile Include="lightfunctions.cpp" />
     <ClCompile Include="main.cpp" />
@@ -144,11 +143,13 @@
     <ClInclude Include="sphere.h" />
     <ClInclude Include="texturefunctions.h" />
     <ClInclude Include="triangle.h" />
+    <ClInclude Include="Vec.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="test.txt" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\..\..\OneDrive\Desktop\csci-5607-master\csci-5607-master\hw1c\src\world_normal.ppm" />
     <None Include="earthtexture.ppm" />
     <None Include="test.ppm" />
     <None Include="world.ppm" />

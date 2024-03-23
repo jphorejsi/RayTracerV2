@@ -2,43 +2,42 @@
 #include "classes.h"
 
 
-bool isNormalMapped(SceneType scene, std::string objectType, int objectNumber) {
+bool isNormalMapped(const SceneType &scene, const std::string objectType, const int objectNumber) {
     if (objectType == "Sphere") {
         return scene.spheres[objectNumber].bumpId != -1;
     }
     else return scene.triangles[objectNumber].bumpId != -1;
 }
 
-BumpType getNormalMap(SceneType scene, std::string objectType, int objectNumber) {
+const BumpType &getNormalMap(const SceneType &scene, const std::string objectType, const int objectNumber) {
     if (objectType == "Sphere") {
         return scene.bumps[scene.spheres[objectNumber].bumpId];
     }
     else return scene.bumps[scene.triangles[objectNumber].bumpId];
 }
 
-Vec2 getTextureCoordinate(SceneType scene, std::string objectType, int objectNumber, Vec3 intersectionPoint) {
+Vec2 getTextureCoordinate(const SceneType &scene, const std::string objectType, const int &objectNumber, Vec3 &intersectionPoint) {
     if (objectType == "Sphere") {
         return scene.spheres[objectNumber].textureCoordinate(intersectionPoint);
     }
     else return scene.triangles[objectNumber].textureCoordinate(scene, intersectionPoint);
 }
 
-Vec3 getNormal(SceneType scene, std::string objectType, int objectNumber, Vec3 intersectionPoint) {
+Vec3 getNormal(const SceneType &scene, const std::string objectType, const int objectNumber, Vec3 &intersectionPoint) {
     if (objectType == "Sphere") {
         return scene.spheres[objectNumber].normal(intersectionPoint);
     }
     else return scene.triangles[objectNumber].normal(scene, intersectionPoint);
 }
 
-
-TextureType getTexture(SceneType scene, std::string objectType, int objectNumber) {
+const TextureType &getTexture(const SceneType &scene, const std::string objectType, const int objectNumber) {
     if (objectType == "Sphere") {
         return scene.textures[scene.spheres[objectNumber].textureId];
     }
     else return scene.textures[scene.triangles[objectNumber].textureId];
 }
 
-Vec3 normalMapping(SceneType scene, std::string objectType, int objectNumber, Vec3 intersectionPoint) {
+Vec3 normalMapping(const SceneType &scene, const std::string objectType, const int objectNumber, Vec3 &intersectionPoint) {
     Vec2 TC = getTextureCoordinate(scene, objectType, objectNumber, intersectionPoint);
     TextureType texture = getTexture(scene, objectType, objectNumber);
     BumpType bump = getNormalMap(scene, objectType, objectNumber);
@@ -49,7 +48,7 @@ Vec3 normalMapping(SceneType scene, std::string objectType, int objectNumber, Ve
     if (objectType == "Sphere") {
         Vec3 N = getNormal(scene, objectType, objectNumber, intersectionPoint);
         Vec3 T = Vec3(-N.y / sqrt(N.x * N.x + N.y * N.y), N.x / sqrt(N.x * N.x + N.y + N.y), 0.0);
-        Vec3 B = cross(N, T);
+        Vec3 B = N.cross(T);
         float nx = T.x * m.x + B.x * m.y + N.x * m.z;
         float ny = T.y * m.x + B.y * m.y + N.y * m.z;
         float nz = T.z * m.x + B.z * m.y + N.z * m.z;
@@ -78,7 +77,7 @@ Vec3 normalMapping(SceneType scene, std::string objectType, int objectNumber, Ve
     }
 }
 
-Vec3 getColor(SceneType scene, std::string objectType, int objectNumber, Vec3 intersectionPoint) {
+Vec3 getColor(const SceneType &scene, const std::string objectType, const int objectNumber, Vec3 &intersectionPoint) {
     Vec2 TC = getTextureCoordinate(scene, objectType, objectNumber, intersectionPoint);
     TextureType texture = getTexture(scene, objectType, objectNumber);
     float x = TC.x * (texture.width - 1);
@@ -94,7 +93,7 @@ Vec3 getColor(SceneType scene, std::string objectType, int objectNumber, Vec3 in
     return (px0 * (1 - alpha) * (1 - beta) + px1 * alpha * (1 - beta) + px2 * (1 - alpha) * beta + px3 * alpha * beta);
 }
 
-bool isTextured(SceneType scene, std::string objectType, int objectNumber) {
+bool isTextured(const SceneType &scene, const std::string objectType, const int objectNumber) {
     if (objectType == "Sphere") {
         return (scene.spheres[objectNumber].textureId != -1);
     }

@@ -2,37 +2,9 @@
 #ifndef CLASSES_H
 #define CLASSES_H
 
-//#include <stdio.h>
-//#include <cmath>
-//#include <iostream>
-//#include <algorithm>
-//#include <string>
-//#include "sphere.h"
-//#include "triangle.h"
-//#include "functions.h"
-//#include <vector>
-
 #include <vector>
 #include <cmath>
-
-#define M_PI 3.14159265358979323846
-
-struct Vec2 {
-	float x, y;
-	Vec2(float xI = 0.0, float yI = 0.0) : x(xI), y(yI) {
-	}
-};
-
-struct Vec3 {
-	float x, y, z;
-	Vec3 operator+(const Vec3& other) const; //operator overloads
-	Vec3 operator-(const Vec3& other) const;
-	Vec3 operator*(float scalar) const; //scalar
-	Vec3 operator-() const;
-	Vec3 operator/(float scalar) const;
-	Vec3(float xi = 0.0, float yi = 0.0, float zi = 0.0) : x(xi), y(yi), z(zi) { //default constructor
-	}
-};
+#include "Vec.h"
 
 struct ColorType {
 	float r, g, b;

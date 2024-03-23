@@ -21,9 +21,6 @@
     <ClCompile Include="functions.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="classes.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="sphere.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -62,6 +59,9 @@
     <ClInclude Include="texturefunctions.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Vec.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="test.txt" />
@@ -70,5 +70,6 @@
     <None Include="world.ppm" />
     <None Include="test.ppm" />
     <None Include="earthtexture.ppm" />
+    <None Include="..\..\..\..\OneDrive\Desktop\csci-5607-master\csci-5607-master\hw1c\src\world_normal.ppm" />
   </ItemGroup>
 </Project>
