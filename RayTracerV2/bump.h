@@ -1,7 +1,7 @@
 #pragma once
-#ifndef BUMP_H
-#define BUMP_H
-#include "classes.h"
+#include <string>
+#include "vec.h"
+struct SceneType;
 
 struct BumpType {
 	int width, height, maxValue;
@@ -14,4 +14,6 @@ struct BumpType {
 	}
 };
 
-#endif //BUMP_H
+bool isNormalMapped(const SceneType& scene, const std::string objectType, const int objectNumber);
+const BumpType& getNormalMap(const SceneType& scene, const std::string objectType, const int objectNumber);
+Vec3 normalMapping(const SceneType& scene, const std::string objectType, const int objectNumber, Vec3& intersectionPoint);

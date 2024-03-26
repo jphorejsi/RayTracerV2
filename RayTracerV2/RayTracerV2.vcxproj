@@ -127,23 +127,25 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="functions.cpp" />
-    <ClCompile Include="lightfunctions.cpp" />
+    <ClCompile Include="bump.cpp" />
+    <ClCompile Include="depthcue.cpp" />
+    <ClCompile Include="depthcue.h" />
+    <ClCompile Include="lights.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="ray.cpp" />
     <ClCompile Include="sphere.cpp" />
-    <ClCompile Include="texturefunctions.cpp" />
+    <ClCompile Include="textures.cpp" />
     <ClCompile Include="triangle.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="bump.h" />
-    <ClInclude Include="classes.h" />
-    <ClInclude Include="functions.h" />
-    <ClInclude Include="lightfunctions.h" />
+    <ClInclude Include="ray.h" />
+    <ClInclude Include="lights.h" />
     <ClInclude Include="scene.h" />
     <ClInclude Include="sphere.h" />
-    <ClInclude Include="texturefunctions.h" />
+    <ClInclude Include="textures.h" />
     <ClInclude Include="triangle.h" />
-    <ClInclude Include="Vec.h" />
+    <ClInclude Include="vec.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="test.txt" />

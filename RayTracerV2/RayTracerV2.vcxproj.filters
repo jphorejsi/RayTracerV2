@@ -18,27 +18,33 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="functions.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="sphere.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="triangle.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="lightfunctions.cpp">
+    <ClCompile Include="lights.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="texturefunctions.cpp">
+    <ClCompile Include="textures.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="depthcue.h">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="bump.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="depthcue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ray.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="classes.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="functions.h">
+    <ClInclude Include="ray.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="triangle.h">
@@ -53,13 +59,13 @@
     <ClInclude Include="bump.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="lightfunctions.h">
+    <ClInclude Include="lights.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="texturefunctions.h">
+    <ClInclude Include="textures.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Vec.h">
+    <ClInclude Include="vec.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -1,28 +1,30 @@
-#include "functions.h"
-#include "classes.h"
-#include "texturefunctions.h"
-#include "lightfunctions.h"
+#include "lights.h"
+#include "textures.h"
+#include "bump.h"
+#include "depthcue.h"
+#include "scene.h"
+
+const MaterialType& getMaterial(const SceneType& scene, const std::string objectType, const int objectNumber) {
+    if (objectType == "Sphere") {
+        return scene.materials[scene.spheres[objectNumber].materialId];
+    }
+    else return scene.materials[scene.triangles[objectNumber].materialId];
+}
 
 int shadowStatus(const SceneType &scene, const RayType &ray, const LightType &light, const int excliusion) {
     std::string objectType;
     int objectNumber;
     float rayT;
     std::tie(objectType, objectNumber, rayT) = intersectionCheck(scene, ray, excliusion);
-    if (objectType != "None")
-    {
-        //std::cout << "something\n";
-        if (light.type == 1)
-        {
+    if (objectType != "None") {
+        if (light.type == 1) {
             float maxT = (light.position.x - ray.position.x) / ray.direction.x;
-            if (rayT > 0 && rayT < maxT)
-            {
+            if (rayT > 0 && rayT < maxT) {
                 return 0;
             }
         }
-        else
-        {
-            if (rayT > 0)
-            {
+        else {
+            if (rayT > 0) {
                 return 0;
             }
         }
@@ -96,7 +98,6 @@ Vec3 shadeRay(SceneType& scene, const std::string objectType, const int objectNu
     Vec3 L, H, v, N, newVec, diffuse, specular, sum;
     float f = 1.0f;
     MaterialType material = getMaterial(scene, objectType, objectNumber);
-    //sum = scene.spheres[objectNumber].m.od * scene.spheres[objectNumber].m.ka;  //calculate ambient
     if (isTextured(scene, objectType, objectNumber)) {
         material.od = getColor(scene, objectType, objectNumber, intersectionPoint);
         if (objectType == "Sphere") {   //replace material od with texture od

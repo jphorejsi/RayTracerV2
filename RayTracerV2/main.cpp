@@ -2,14 +2,9 @@
 #include <fstream>
 #include <string>
 #include <cmath>
-#include <algorithm>
-#include <tuple>
-#include "functions.h"
-#include "classes.h"
-#include "lightfunctions.h"
-#include "texturefunctions.h"
-#include "Vec.h"
-#include <chrono>
+
+#include "scene.h"
+#include "sstream"
 
 SceneType scene;
 
@@ -55,7 +50,7 @@ int parse(const std::string filename) {
         }
         else if (subs == "hfov") {
             iss >> str_param[0];
-            scene.fov = FovType(0, std::stof(str_param[0]));
+            scene.fov = Vec2(0, std::stof(str_param[0]));
         }
         else if (subs == "bkgcolor") {
             iss >> str_param[0] >> str_param[1] >> str_param[2];
@@ -63,7 +58,7 @@ int parse(const std::string filename) {
         }
         else if (subs == "imsize") {
             iss >> str_param[0] >> str_param[1];
-            scene.imageSize = ISizeType(std::stoi(str_param[0]), std::stoi(str_param[1]));
+            scene.imageSize = Vec2(std::stoi(str_param[0]), std::stoi(str_param[1]));
         }
         else if (subs == "mtlcolor") {
             iss >> str_param[0] >> str_param[1] >> str_param[2] >> str_param[3] >> str_param[4] >> str_param[5] >> str_param[6] >> str_param[7] >> str_param[8] >> str_param[9];
@@ -123,7 +118,7 @@ int parse(const std::string filename) {
             else if (sscanf_s(line.c_str(), "f %d//%d %d//%d %d//%d", int_var, int_var + 1, int_var + 2, int_var + 3, int_var + 4, int_var + 5) == 6) {
                 newTriangle = TriangleType(scene.materials.size() - 1, scene.textures.size() - 1, scene.bumps.size() - 1, int_var[0], int_var[2], int_var[4], true, int_var[1], int_var[3], int_var[5]);
             }
-            else if (sscanf_s(line.c_str(), "f %d/%d %d/%d %d/%d", int_var, int_var + 1, int_var + 2, int_var + 3, int_var + 4, int_var + 5) == 6) { //wrong index
+            else if (sscanf_s(line.c_str(), "f %d/%d %d/%d %d/%d", int_var, int_var + 1, int_var + 2, int_var + 3, int_var + 4, int_var + 5) == 6) {
                 newTriangle = TriangleType(scene.materials.size() - 1, scene.textures.size() - 1, scene.bumps.size() - 1, int_var[0], int_var[2], int_var[4]);
                 newTriangle.textureMapped = true;
                 newTriangle.vt0Index = int_var[1];
@@ -137,23 +132,15 @@ int parse(const std::string filename) {
             triangleId++;
             scene.triangles.push_back(newTriangle);
         }
-        else if (subs == "bump")
-        {
-            // read in the filename for the normal map
-            if (sscanf_s(line.c_str(), "bump %s", str_param[0]) == 1)
-            {
-                // update the current material color
+        else if (subs == "bump") {
+            if (sscanf_s(line.c_str(), "bump %s", str_param[0]) == 1) {
                 bumpId++;
-                // open the texture image and bind it to a input stream
                 std::ifstream bump_inputstream(str_param[0], std::ios::in | std::ios::binary);
-                // read the header information
                 bump_inputstream >> str_param[1] >> int_var[0] >> int_var[1] >> int_var[2];
                 BumpType bump = BumpType(int_var[0], int_var[1], int_var[2]);
                 Vec3** checkerboard = bump.bumpArray;
-                for (int j = 0; j < bump.height; j++)
-                {
-                    for (int i = 0; i < bump.width; i++)
-                    {
+                for (int j = 0; j < bump.height; j++) {
+                    for (int i = 0; i < bump.width; i++) {
                         bump_inputstream >> int_var[3] >> int_var[4] >> int_var[5];
                         checkerboard[i][j].x = (int_var[3] * 1.0 / bump.maxValue * 2 - 1);
                         checkerboard[i][j].y = (int_var[4] * 1.0 / bump.maxValue * 2 - 1);
@@ -170,9 +157,9 @@ int parse(const std::string filename) {
 
 
 int raycast(std::string filename) {
-    ColorType* arr = new ColorType[scene.imageSize.width * scene.imageSize.height];
-    float aspect_ratio = (float)scene.imageSize.width / (float)scene.imageSize.height;
-    scene.viewingWindow.width = 2 * 5 * (tan(.5 * (scene.fov.horizontal * 3.14159265358979323846 / 180.0)));
+    ColorType* arr = new ColorType[scene.imageSize.x * scene.imageSize.y];
+    float aspect_ratio = (float)scene.imageSize.x / (float)scene.imageSize.y;
+    scene.viewingWindow.width = 2 * 5 * (tan(.5 * (scene.fov.x * 3.14159265358979323846 / 180.0)));
     scene.viewingWindow.height = scene.viewingWindow.width / aspect_ratio;
     Vec3 u = scene.viewDirection.cross(scene.upDirection);
     Vec3 v = u.cross(scene.viewDirection);
@@ -186,26 +173,24 @@ int raycast(std::string filename) {
     scene.viewingWindow.ur = firsthalf + u2 + v2;
     scene.viewingWindow.ll = firsthalf - u2 - v2;
     scene.viewingWindow.lr = firsthalf + u2 - v2;
-    Vec3 deltaH = (scene.viewingWindow.ur - scene.viewingWindow.ul) / (float)(scene.imageSize.width - 1);
-    Vec3 deltaV = (scene.viewingWindow.ll - scene.viewingWindow.ul) / (float)(scene.imageSize.height - 1);
+    Vec3 deltaH = (scene.viewingWindow.ur - scene.viewingWindow.ul) / (float)(scene.imageSize.x - 1);
+    Vec3 deltaV = (scene.viewingWindow.ll - scene.viewingWindow.ul) / (float)(scene.imageSize.y - 1);
     std::string newfile = filename;
     newfile.pop_back(); newfile.pop_back(); newfile.pop_back();
     newfile.append("ppm");
     std::ofstream outfile(newfile);
-    outfile << "P3" << "\n" << scene.imageSize.width << " " << scene.imageSize.height << "\n" << "255\n";
+    outfile << "P3" << "\n" << scene.imageSize.x << " " << scene.imageSize.y << "\n" << "255\n";
     Vec3 point;
     RayType ray;
     Vec3 vecColor;
     ray.position = scene.eyePosition;
-    for (int j = 0; j < scene.imageSize.height; j++) {
-        for (int i = 0; i < scene.imageSize.width; i++) {
-            //if (i == 256 && j == 256) {
-                point = scene.viewingWindow.ul + deltaH * (float)i + deltaV * (float)j;
-                ray.direction = (point - scene.eyePosition).normal();
-                vecColor = traceRay(scene, ray, i, j);
-                arr[i].r = vecColor.x; arr[i].g = vecColor.y; arr[i].b = vecColor.z;
-                outfile << int(arr[i].r * 255) << " " << int(arr[i].g * 255) << " " << int(arr[i].b * 255) << "\n";
-            //}
+    for (int j = 0; j < scene.imageSize.y; j++) {
+        for (int i = 0; i < scene.imageSize.x; i++) {
+            point = scene.viewingWindow.ul + deltaH * (float)i + deltaV * (float)j;
+            ray.direction = (point - scene.eyePosition).normal();
+            vecColor = traceRay(scene, ray, i, j);
+            arr[i].r = vecColor.x; arr[i].g = vecColor.y; arr[i].b = vecColor.z;
+            outfile << int(arr[i].r * 255) << " " << int(arr[i].g * 255) << " " << int(arr[i].b * 255) << "\n";
         }
     }
     outfile.close();

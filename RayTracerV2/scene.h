@@ -1,24 +1,29 @@
 #pragma once
-#ifndef SCENE_H
-#define SCENE_H
-
-//#include "classes.h"
-
-#include <iostream>
-#include <fstream>
-#include <string>
-#include <sstream>
-#include "classes.h"
+#include <vector>
 #include "sphere.h"
+#include "lights.h"
 #include "triangle.h"
+#include "textures.h"
 #include "bump.h"
+#include "depthcue.h"
 
-struct TriangleType;
+//struct DepthCueType;
+//struct LightType;
+//struct AttLightType;
+//struct MaterialType;
+//struct TextureType;
+//struct TriangleType;
+//struct BumpType;
+
+
+struct ViewingWindowType {
+	float width, height;
+	Vec3 ul, ur, ll, lr;
+};
 
 struct SceneType {
 	Vec3 eyePosition, upDirection, viewDirection, backgroundColor;
-	FovType fov;
-	ISizeType imageSize;
+	Vec2 fov, imageSize;
 	ViewingWindowType viewingWindow;
 	std::vector<LightType> lights;
 	std::vector<SphereType> spheres;
@@ -29,8 +34,6 @@ struct SceneType {
 	std::vector<Vec3> vertices;
 	std::vector<Vec3> normalVerticies;
 	std::vector<Vec2> textureCordinates;
-	std::vector<BumpType> bumps; //to be changed
+	std::vector<BumpType> bumps;
 	DepthCueType depthCue;
 };
-
-#endif //SCENE_H

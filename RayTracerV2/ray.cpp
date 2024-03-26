@@ -1,24 +1,7 @@
-#include <iostream>
-#include <fstream>
-#include <string>
-#include <cmath>
-#include <algorithm>
-#include <tuple>
-#include "functions.h"
-#include "classes.h"
-#include "bump.h"
+#include "ray.h"
 #include "scene.h"
 
-
-
-const MaterialType &getMaterial(const SceneType &scene, const std::string objectType, const int objectNumber) {
-    if (objectType == "Sphere") {
-        return scene.materials[scene.spheres[objectNumber].materialId];
-    }
-    else return scene.materials[scene.triangles[objectNumber].materialId];
-}
-
-std::tuple<std::string, int, float> intersectionCheck(const SceneType &scene, const RayType &ray, const int exclude_id) {
+std::tuple<std::string, int, float> intersectionCheck(const SceneType& scene, const RayType& ray, const int exclude_id) {
     float min_t = 100000;
     float temp_t;
     int obj_idx = -1;
@@ -96,22 +79,9 @@ std::tuple<std::string, int, float> intersectionCheck(const SceneType &scene, co
     return std::make_tuple(obj_type, obj_idx, min_t);
 }
 
-float distance(const Vec3 &point1, const Vec3 &point2) {
+float distance(const Vec3& point1, const Vec3& point2) {
     float sum = pow(point1.x - point2.x, 2)
         + pow(point1.y - point2.y, 2)
         + pow(point1.z - point2.z, 2);
     return sqrt(sum);
-}
-
-float depthCueing(const SceneType &scene, const DepthCueType &depthCue, const Vec3 &intersectionPoint, const Vec3 &eye) {
-    float alpha = 1.0;
-    float dist = distance(intersectionPoint, eye);
-    if (dist < scene.depthCue.distanceMin) {
-        alpha = scene.depthCue.alphaMax;
-    }
-    else if (dist < scene.depthCue.distanceMax) {
-        alpha = scene.depthCue.alphaMin + (scene.depthCue.alphaMax - scene.depthCue.alphaMin) * (scene.depthCue.distanceMax - dist) / (scene.depthCue.distanceMax - scene.depthCue.distanceMin);
-    }
-    else alpha = scene.depthCue.alphaMin;
-    return alpha;
 }

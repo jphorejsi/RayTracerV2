@@ -1,5 +1,5 @@
 #include "triangle.h"
-#include "functions.h"
+#include "scene.h"
 
 Vec3 TriangleType::barycentric(const SceneType &scene, const Vec3 &intersectionPoint) const {
 	Vec3 p0 = scene.vertices[this->v0Index - 1];
