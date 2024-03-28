@@ -32,7 +32,25 @@ int parse(const std::string filename) {
     int sphereId = 0;
     int triangleId = 0;
     int bumpId = -1;
-    while (std::getline(inputstream, line)){
+    int vertexIndex = 0;
+    int triangleIndex = 0;
+
+    while(std::getline(inputstream, line)) { //allocate
+        subs = "";
+        std::istringstream iss(line);
+        iss >> subs;
+        if (subs == "v") {
+            scene.verticesSize++;
+        }
+        if (subs == "f") {
+            scene.trianglesSize++;
+        }
+    }
+    scene.vertices = new Vec3[scene.verticesSize];
+    scene.triangles = new TriangleType[scene.trianglesSize];
+    inputstream.close();    //reset to origin
+    inputstream.open(filename, std::ios::in | std::ios::binary);
+    while(std::getline(inputstream, line)){ //build
         subs = "";
         std::istringstream iss(line);
         iss >> subs;
@@ -50,7 +68,7 @@ int parse(const std::string filename) {
         }
         else if (subs == "hfov") {
             iss >> str_param[0];
-            scene.fov = Vec2(0, std::stof(str_param[0]));
+            scene.fov = Vec2(std::stof(str_param[0]), 0);
         }
         else if (subs == "bkgcolor") {
             iss >> str_param[0] >> str_param[1] >> str_param[2];
@@ -100,7 +118,8 @@ int parse(const std::string filename) {
         }
         else if (subs == "v") {
             iss >> str_param[0] >> str_param[1] >> str_param[2];
-            scene.vertices.push_back(Vec3(stof(str_param[0]), stof(str_param[1]), stof(str_param[2])));
+            scene.vertices[vertexIndex] = Vec3(stof(str_param[0]), stof(str_param[1]), stof(str_param[2]));
+            vertexIndex++;
         }
         else if (subs == "vn") {
             iss >> str_param[0] >> str_param[1] >> str_param[2];
@@ -130,7 +149,8 @@ int parse(const std::string filename) {
             }
             newTriangle.Id = triangleId;
             triangleId++;
-            scene.triangles.push_back(newTriangle);
+            scene.triangles[triangleIndex] = newTriangle;
+            triangleIndex++;
         }
         else if (subs == "bump") {
             if (sscanf_s(line.c_str(), "bump %s", str_param[0]) == 1) {
@@ -191,6 +211,7 @@ int raycast(std::string filename) {
             vecColor = traceRay(scene, ray, i, j);
             arr[i].r = vecColor.x; arr[i].g = vecColor.y; arr[i].b = vecColor.z;
             outfile << int(arr[i].r * 255) << " " << int(arr[i].g * 255) << " " << int(arr[i].b * 255) << "\n";
+            std::cout << j << std::endl;
         }
     }
     outfile.close();

@@ -54,21 +54,6 @@ Vec3 lightShade(const SceneType &scene, const RayType &ray, Vec3 &intersectionPo
     }
     Vec3 v = (ray.direction * -1).normal();
     Vec3 H = (L + v).normal();
-
-    
-    //if (objectType == "Sphere") {
-    //    diffuse = scene.materials[scene.spheres[objectNumber].materialId].od * scene.materials[scene.spheres[objectNumber].materialId].kd * (std::max(float(0), N.dot(L)));
-    //    specular = scene.materials[scene.spheres[objectNumber].materialId].os * scene.materials[scene.spheres[objectNumber].materialId].ks * pow(std::max(float(0), N.dot(H)), scene.materials[scene.spheres[objectNumber].materialId].n);
-    //}
-    //else {
-    //    diffuse = scene.materials[scene.triangles[objectNumber].materialId].od * scene.materials[scene.triangles[objectNumber].materialId].kd * (std::max(float(0), N.dot(L)));
-    //    specular = scene.materials[scene.triangles[objectNumber].materialId].os * scene.materials[scene.triangles[objectNumber].materialId].ks * pow(std::max(float(0), N.dot(H)), scene.materials[scene.triangles[objectNumber].materialId].n);
-    //}
-    //Vec3 newVec = diffuse + specular;
-    //newVec.x = newVec.x * light.color.x; newVec.y = newVec.y * light.color.y; newVec.z = newVec.z * light.color.z;
-    //RayType ray2 = RayType(intersectionPoint, L);
-    //return newVec * float(shadowStatus(scene, ray2, light, objectNumber));
-
     RayType raySecond = RayType(intersectionPoint, L);
     int shadowFlag = 1;
     if (shadowStatus(scene, raySecond, light, objectNumber) == 0) {

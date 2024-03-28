@@ -39,7 +39,9 @@ std::tuple<std::string, int, float> intersectionCheck(const SceneType& scene, co
             }
         }
     }
-    for (auto t : scene.triangles) {
+    //for (auto t : scene.triangles) {
+    for (int i = 0; i < scene.trianglesSize; i++) {
+        TriangleType t = scene.triangles[i];
         ray_center = ray.position;
         dir = ray.direction;
         Vec3 p0 = scene.vertices[t.v0Index - 1];

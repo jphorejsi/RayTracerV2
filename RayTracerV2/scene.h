@@ -30,8 +30,10 @@ struct SceneType {
 	std::vector<MaterialType> materials;
 	std::vector<TextureType> textures;
 	std::vector<AttLightType> attLights;
-	std::vector<TriangleType> triangles;
-	std::vector<Vec3> vertices;
+	TriangleType* triangles;
+	int trianglesSize = 0;
+	Vec3* vertices;
+	int verticesSize = 0;
 	std::vector<Vec3> normalVerticies;
 	std::vector<Vec2> textureCordinates;
 	std::vector<BumpType> bumps;
