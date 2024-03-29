@@ -2,10 +2,10 @@
 #include <fstream>
 #include <string>
 #include <cmath>
-
 #include "scene.h"
 #include "sstream"
 
+bool autoSS = true;
 SceneType scene;
 
 Vec3 traceRay(SceneType &scene, const RayType &ray, const int i, const int j) {
@@ -33,6 +33,7 @@ int parse(const std::string filename) {
     int triangleId = 0;
     int bumpId = -1;
     int vertexIndex = 0;
+    int normalVertexIndex = 0;
     int triangleIndex = 0;
 
     while(std::getline(inputstream, line)) { //allocate
@@ -41,13 +42,20 @@ int parse(const std::string filename) {
         iss >> subs;
         if (subs == "v") {
             scene.verticesSize++;
+            if (autoSS) {
+                scene.normalVerticesSize++;
+            }
         }
         if (subs == "f") {
             scene.trianglesSize++;
         }
+        if (subs == "vn") {
+            scene.normalVerticesSize++;
+        }
     }
     scene.vertices = new Vec3[scene.verticesSize];
     scene.triangles = new TriangleType[scene.trianglesSize];
+    scene.normalVertices = new Vec3[scene.normalVerticesSize];
     inputstream.close();    //reset to origin
     inputstream.open(filename, std::ios::in | std::ios::binary);
     while(std::getline(inputstream, line)){ //build
@@ -123,7 +131,8 @@ int parse(const std::string filename) {
         }
         else if (subs == "vn") {
             iss >> str_param[0] >> str_param[1] >> str_param[2];
-            scene.normalVerticies.push_back(Vec3(stof(str_param[0]), stof(str_param[1]), stof(str_param[2])).normal());
+            scene.normalVertices[normalVertexIndex] = Vec3(stof(str_param[0]), stof(str_param[1]), stof(str_param[2])).normal();
+            normalVertexIndex++;
         }
         else if (subs == "vt") {
             iss >> str_param[0] >> str_param[1];
@@ -171,6 +180,54 @@ int parse(const std::string filename) {
             }
         }
     }
+
+
+
+    if (autoSS) {
+        for (int i = 0; i < scene.trianglesSize; i++) { //give every triangle a surface normal
+            TriangleType t = scene.triangles[i];
+            Vec3 A = scene.vertices[t.v1Index - 1] - scene.vertices[t.v0Index - 1];
+            Vec3 B = scene.vertices[t.v2Index - 1] - scene.vertices[t.v0Index - 1];
+            scene.triangles[i].surfaceNormal = (A.cross(B)).normal();
+            //std::cout << scene.triangles[i].surfaceNormal.x << " " << scene.triangles[i].surfaceNormal.y << " " << scene.triangles[i].surfaceNormal.z << "\n";
+        }
+
+       //The surface normal n0 at vertex v0 can be approximated by averaging the plane normals of each of the triangles that contain v0
+        std::vector<Vec3> adjacentNormals;
+        for (int i = 0; i < scene.verticesSize; i++) {
+            std::vector<Vec3> adjacentNormals;
+            Vec3 vertex = scene.vertices[i];
+            for (int j = 0; j < scene.trianglesSize; j++) {
+                //std::cout << j << std::endl;
+                //if (j == 6319) {
+                //    std::cout << "j\n";
+                //}
+                //std::cout << j << std::endl;
+                scene.triangles[j].smoothShaded = true;
+                TriangleType t = scene.triangles[j];
+                if (vertex == scene.vertices[t.v0Index - 1] || vertex == scene.vertices[t.v1Index - 1] || vertex == scene.vertices[t.v2Index - 1]) {
+                    adjacentNormals.push_back(t.surfaceNormal);
+                }
+            }
+            for (int j = 0; j < adjacentNormals.size(); j++) {
+                //std::cout << j << "\n";
+                scene.normalVertices[i] = scene.normalVertices[i] + adjacentNormals[j];
+            }
+            scene.normalVertices[i] = scene.normalVertices[i] / adjacentNormals.size();
+        }
+
+        for (int i = 0; i < scene.verticesSize; i++) {
+            scene.normalVertices[i] = scene.normalVertices[i].normal();
+        }
+
+        for (int i = 0; i < scene.trianglesSize; i++) {
+            scene.triangles[i].vn0Index = scene.triangles[i].v0Index;
+            scene.triangles[i].vn1Index = scene.triangles[i].v1Index;
+            scene.triangles[i].vn2Index = scene.triangles[i].v2Index;
+        }
+
+        std::cout << "normal vertices calculated\n";
+    }
     return 1;
 }
 
@@ -211,7 +268,7 @@ int raycast(std::string filename) {
             vecColor = traceRay(scene, ray, i, j);
             arr[i].r = vecColor.x; arr[i].g = vecColor.y; arr[i].b = vecColor.z;
             outfile << int(arr[i].r * 255) << " " << int(arr[i].g * 255) << " " << int(arr[i].b * 255) << "\n";
-            std::cout << j << std::endl;
+            //std::cout << j << std::endl;
         }
     }
     outfile.close();

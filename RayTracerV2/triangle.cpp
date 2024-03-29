@@ -33,9 +33,9 @@ Vec3 TriangleType::normal(const SceneType &scene,const Vec3 &intersectionPoint) 
 	}
 	else {
 		Vec3 bayrcentric_coordinates = this->barycentric(scene, intersectionPoint);
-		Vec3 vn0 = scene.normalVerticies[this->vn0Index - 1];
-		Vec3 vn1 = scene.normalVerticies[this->vn1Index - 1];
-		Vec3 vn2 = scene.normalVerticies[this->vn2Index - 1];
+		Vec3 vn0 = scene.normalVertices[this->vn0Index - 1];
+		Vec3 vn1 = scene.normalVertices[this->vn1Index - 1];
+		Vec3 vn2 = scene.normalVertices[this->vn2Index - 1];
 		return (vn0 * bayrcentric_coordinates.x + vn1 * bayrcentric_coordinates.y + vn2 * bayrcentric_coordinates.z).normal();
 	}
 }

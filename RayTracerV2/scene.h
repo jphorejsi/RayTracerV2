@@ -34,7 +34,8 @@ struct SceneType {
 	int trianglesSize = 0;
 	Vec3* vertices;
 	int verticesSize = 0;
-	std::vector<Vec3> normalVerticies;
+	Vec3* normalVertices;
+	int normalVerticesSize = 0;
 	std::vector<Vec2> textureCordinates;
 	std::vector<BumpType> bumps;
 	DepthCueType depthCue;

@@ -3,6 +3,7 @@
 struct SceneType;
 
 struct TriangleType {
+	Vec3 surfaceNormal;
 	int materialId, textureId, bumpId, Id = -1;
 	int v0Index, v1Index, v2Index;
 	int vn0Index, vn1Index, vn2Index;

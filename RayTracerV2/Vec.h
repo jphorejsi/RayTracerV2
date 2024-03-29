@@ -36,4 +36,7 @@ struct Vec3 {
     Vec3 operator/(float c) const {
         return Vec3(this->x / c, this->y / c, this->z / c);
     }
+    bool operator==(const Vec3& v) const {
+        return this->x == v.x && this->y == v.y && this->z == v.z;
+    }
 };

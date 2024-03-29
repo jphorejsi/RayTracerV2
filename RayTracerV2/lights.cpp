@@ -104,9 +104,9 @@ Vec3 shadeRay(SceneType& scene, const std::string objectType, const int objectNu
         sum = sum + lightShade(scene, ray, intersectionPoint, scene.attLights[i], objectType, objectNumber) * f;
     }
     sum.x = std::min(1.0f, sum.x); sum.y = std::min(1.0f, sum.y); sum.z = std::min(1.0f, sum.z); //Clamp to 1.0
-    if (scene.depthCue.enabled == true) {
-        float dcf = depthCueing(scene, scene.depthCue, intersectionPoint, scene.eyePosition);
-        sum = sum * dcf + scene.depthCue.dc * (1 - dcf);
-    }
+    //if (scene.depthCue.enabled == true) {
+    //    float dcf = depthCueing(scene, scene.depthCue, intersectionPoint, scene.eyePosition);
+    //    sum = sum * dcf + scene.depthCue.dc * (1 - dcf);
+    //}
     return sum;
 }
