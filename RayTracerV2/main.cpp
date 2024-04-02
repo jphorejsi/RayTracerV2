@@ -5,7 +5,7 @@
 #include "scene.h"
 #include "sstream"
 
-bool autoSS = true;
+bool autoSS = false;
 SceneType scene;
 
 Vec3 traceRay(SceneType &scene, const RayType &ray, const int i, const int j) {
@@ -91,7 +91,8 @@ int parse(const std::string filename) {
             scene.materials.push_back(MaterialType(Vec3(std::stof(str_param[0]), std::stof(str_param[1]), std::stof(str_param[2])), Vec3(std::stof(str_param[3]), std::stof(str_param[4]), std::stof(str_param[5])), std::stof(str_param[6]), std::stof(str_param[7]), std::stof(str_param[8]), std::stof(str_param[9])));
         }
         else if (subs == "sphere") {
-            SphereType newSphere = (SphereType(Vec3(std::stof(str_param[0]), std::stof(str_param[1]), std::stof(str_param[2])), std::stof(str_param[3]), scene.materials.size() - 1, scene.textures.size() - 1));   //if -1 no material or texture material cannot be -1 texture can
+            iss >> str_param[0] >> str_param[1] >> str_param[2] >> str_param[3];
+            SphereType newSphere = SphereType(Vec3(std::stof(str_param[0]), std::stof(str_param[1]), std::stof(str_param[2])), std::stof(str_param[3]), scene.materials.size() - 1, scene.textures.size() - 1);   //if -1 no material or texture material cannot be -1 texture can
             newSphere.Id = sphereId;
             sphereId++;
             scene.spheres.push_back(newSphere);
