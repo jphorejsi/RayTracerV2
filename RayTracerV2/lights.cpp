@@ -54,19 +54,56 @@ Vec3 lightShade(const SceneType &scene, const RayType &ray, Vec3 &intersectionPo
     }
     Vec3 v = (ray.direction * -1).normal();
     Vec3 H = (L + v).normal();
-    RayType raySecond = RayType(intersectionPoint, L);
-    int shadowFlag = 1;
-    if (shadowStatus(scene, raySecond, light, objectNumber) == 0) {
-        shadowFlag = 0;
+
+    if (objectType == "Sphere") {
+        diffuse = scene.materials[scene.spheres[objectNumber].materialId].od * scene.materials[scene.spheres[objectNumber].materialId].kd * (std::max(float(0), N.dot(L)));
+        specular = scene.materials[scene.spheres[objectNumber].materialId].os * scene.materials[scene.spheres[objectNumber].materialId].ks * pow(std::max(float(0), N.dot(H)), scene.materials[scene.spheres[objectNumber].materialId].n);
     }
-    const MaterialType& cur_material = getMaterial(scene, objectType, objectNumber);
-    float term1 = std::max(float(0), N.dot(L));
-    float term2 = pow(std::max(float(0), N.dot(H)), cur_material.n);
-    float Ir = shadowFlag * (cur_material.kd * cur_material.od.x * term1 + cur_material.ks * cur_material.os.x * term2);
-    float Ig = shadowFlag * (cur_material.kd * cur_material.od.y * term1 + cur_material.ks * cur_material.os.y * term2);
-    float Ib = shadowFlag * (cur_material.kd * cur_material.od.z * term1 + cur_material.ks * cur_material.os.z * term2);
-    return Vec3(Ir, Ig, Ib);
+    else {
+        diffuse = scene.materials[scene.triangles[objectNumber].materialId].od * scene.materials[scene.triangles[objectNumber].materialId].kd * (std::max(float(0), N.dot(L)));
+        specular = scene.materials[scene.triangles[objectNumber].materialId].os * scene.materials[scene.triangles[objectNumber].materialId].ks * pow(std::max(float(0), N.dot(H)), scene.materials[scene.triangles[objectNumber].materialId].n);
+    }
+    Vec3 newVec = diffuse + specular;
+    newVec.x = newVec.x * light.color.x; newVec.y = newVec.y * light.color.y; newVec.z = newVec.z * light.color.z;
+    RayType ray2 = RayType(intersectionPoint, L);
+    return newVec * float(shadowStatus(scene, ray2, light, objectNumber));
 }
+
+//Vec3 lightShade(const SceneType &scene, const RayType &ray, Vec3 &intersectionPoint, const LightType &light, const std::string objectType, const int objectNumber) {
+//    Vec3 N = getNormal(scene, objectType, objectNumber, intersectionPoint);
+//    Vec3 L;
+//    Vec3 Od, Os;
+//    Vec3 diffuse, specular;
+//    float lightDistance;
+//    if (isTextured(scene, objectType, objectNumber)) {
+//        Od = getColor(scene, objectType, objectNumber, intersectionPoint);
+//        if (isNormalMapped(scene, objectType, objectNumber)) {
+//            N = normalMapping(scene, objectType, objectNumber, intersectionPoint);
+//        }
+//    }
+//    if (light.type == 0) { //if light type is directional
+//        L = (light.position * -1.0f).normal();
+//        lightDistance = FLT_MAX;
+//    }
+//    else {  //point
+//        L = (light.position - intersectionPoint).normal();
+//        lightDistance = sqrt(pow(light.position.x - intersectionPoint.x, 2) + pow(light.position.y - intersectionPoint.y, 2) + pow(light.position.z - intersectionPoint.z, 2));
+//    }
+//    Vec3 v = (ray.direction * -1).normal();
+//    Vec3 H = (L + v).normal();
+//    RayType raySecond = RayType(intersectionPoint, L);
+//    int shadowFlag = 1;
+//    if (shadowStatus(scene, raySecond, light, objectNumber) == 0) {
+//        shadowFlag = 0;
+//    }
+//    const MaterialType& cur_material = getMaterial(scene, objectType, objectNumber);
+//    float term1 = std::max(float(0), N.dot(L));
+//    float term2 = pow(std::max(float(0), N.dot(H)), cur_material.n);
+//    float Ir = shadowFlag * (cur_material.kd * cur_material.od.x * term1 + cur_material.ks * cur_material.os.x * term2);
+//    float Ig = shadowFlag * (cur_material.kd * cur_material.od.y * term1 + cur_material.ks * cur_material.os.y * term2);
+//    float Ib = shadowFlag * (cur_material.kd * cur_material.od.z * term1 + cur_material.ks * cur_material.os.z * term2);
+//    return Vec3(Ir, Ig, Ib);
+//}
 
 float lightAttenuation(const Vec3 &intersectionPoint, const AttLightType &attLight) {
     float f = 1.0;
