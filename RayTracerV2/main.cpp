@@ -163,22 +163,21 @@ int parse(const std::string filename) {
             triangleIndex++;
         }
         else if (subs == "bump") {
-            if (sscanf_s(line.c_str(), "bump %s", str_param[0]) == 1) {
-                bumpId++;
-                std::ifstream bump_inputstream(str_param[0], std::ios::in | std::ios::binary);
-                bump_inputstream >> str_param[1] >> int_var[0] >> int_var[1] >> int_var[2];
-                BumpType bump = BumpType(int_var[0], int_var[1], int_var[2]);
-                Vec3** checkerboard = bump.bumpArray;
-                for (int j = 0; j < bump.height; j++) {
-                    for (int i = 0; i < bump.width; i++) {
-                        bump_inputstream >> int_var[3] >> int_var[4] >> int_var[5];
-                        checkerboard[i][j].x = (int_var[3] * 1.0 / bump.maxValue * 2 - 1);
-                        checkerboard[i][j].y = (int_var[4] * 1.0 / bump.maxValue * 2 - 1);
-                        checkerboard[i][j].z = (int_var[5] * 1.0 / bump.maxValue * 2 - 1);
-                    }
+            iss >> str_param[0];
+            bumpId++;
+            std::ifstream bump_inputstream(str_param[0], std::ios::in | std::ios::binary);
+            bump_inputstream >> str_param[1] >> int_var[0] >> int_var[1] >> int_var[2];
+            BumpType bump = BumpType(int_var[0], int_var[1], int_var[2]);
+            Vec3** checkerboard = bump.bumpArray;
+            for (int j = 0; j < bump.height; j++) {
+                for (int i = 0; i < bump.width; i++) {
+                    bump_inputstream >> int_var[3] >> int_var[4] >> int_var[5];
+                    checkerboard[i][j].x = (int_var[3] * 1.0 / bump.maxValue * 2 - 1);
+                    checkerboard[i][j].y = (int_var[4] * 1.0 / bump.maxValue * 2 - 1);
+                    checkerboard[i][j].z = (int_var[5] * 1.0 / bump.maxValue * 2 - 1);
                 }
-                scene.bumps.push_back(bump);
             }
+            scene.bumps.push_back(bump);
         }
     }
 

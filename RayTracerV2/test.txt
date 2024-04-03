@@ -7,9 +7,7 @@ bkgcolor 0.1 0.1 0.1
 light 1 1 1 1 1 0 0
 light -1 -1 1 1 0 0 1
 mtlcolor 0.1 0.1 0.1 1 1 1 1 1 1 20
-texture world.ppm
-
-sphere 0 0 0 0.2
+texture brickwall.ppm
 
 v -1 1 0
 v 1 1 0
