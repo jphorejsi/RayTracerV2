@@ -5,7 +5,7 @@
 #include "scene.h"
 #include "sstream"
 
-bool autoSS = false;
+bool autoSS = true;
 SceneType scene;
 
 Vec3 traceRay(SceneType &scene, const RayType &ray, const int i, const int j) {

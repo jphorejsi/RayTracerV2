@@ -1,5 +1,5 @@
 hfov 60
-imsize 1000 1000
+imsize 1500 1500
 eye 0 0 2
 viewdir 0 0 -1
 updir 0 1 0
@@ -9,6 +9,7 @@ light -1 -1 1 1 0 0 1
 mtlcolor 0.1 0.1 0.1 1 1 1 1 1 1 20
 texture brickwall.ppm
 bump brickwall_normal.ppm
+
 
 v -1 1 0
 v 1 1 0
