@@ -39,7 +39,6 @@ std::tuple<std::string, int, float> intersectionCheck(const SceneType& scene, co
             }
         }
     }
-    //for (auto t : scene.triangles) {
     for (int i = 0; i < scene.trianglesSize; i++) {
         TriangleType t = scene.triangles[i];
         ray_center = ray.position;
@@ -82,8 +81,6 @@ std::tuple<std::string, int, float> intersectionCheck(const SceneType& scene, co
 }
 
 float distance(const Vec3& point1, const Vec3& point2) {
-    float sum = pow(point1.x - point2.x, 2)
-        + pow(point1.y - point2.y, 2)
-        + pow(point1.z - point2.z, 2);
+    float sum = pow(point1.x - point2.x, 2) + pow(point1.y - point2.y, 2) + pow(point1.z - point2.z, 2);
     return sqrt(sum);
 }

@@ -128,8 +128,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="bump.cpp" />
-    <ClCompile Include="depthcue.cpp" />
-    <ClCompile Include="depthcue.h" />
     <ClCompile Include="lights.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="ray.cpp" />

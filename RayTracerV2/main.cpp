@@ -5,19 +5,24 @@
 #include "scene.h"
 #include "sstream"
 
-bool autoSS = true;
+bool autoSS = false;
 SceneType scene;
 
 Vec3 traceRay(SceneType &scene, const RayType &ray, const int i, const int j) {
+    Vec3 colorToReturn;
     int currentObj = -1;
     std::string shape = "None";
     float rayT;
     std::tie(shape, currentObj, rayT) = intersectionCheck(scene, ray, -1);
     Vec3 intersectionPoint = ray.position + ray.direction * rayT;
     if (shape != "None") {
-        return shadeRay(scene, shape, currentObj, intersectionPoint, ray);
+        colorToReturn = shadeRay(scene, shape, currentObj, intersectionPoint, ray);
     }
-    return scene.backgroundColor;
+    else return scene.backgroundColor;
+    if (shape == "sphere") {
+        //colorToReturn + colorToReturn + recursiveTraceRay(scene, RayType(intersectionPoint, -ray.direction.normal()), 1, true, 0, shape, currentObj);
+    }
+    return colorToReturn;
 }
 
 int parse(const std::string filename) {
@@ -27,7 +32,7 @@ int parse(const std::string filename) {
     }
     std::string subs;
     std::string line;
-    std::string str_param[10];
+    std::string str_param[12];
     int int_var[10];
     int sphereId = 0;
     int triangleId = 0;
@@ -87,8 +92,8 @@ int parse(const std::string filename) {
             scene.imageSize = Vec2(std::stoi(str_param[0]), std::stoi(str_param[1]));
         }
         else if (subs == "mtlcolor") {
-            iss >> str_param[0] >> str_param[1] >> str_param[2] >> str_param[3] >> str_param[4] >> str_param[5] >> str_param[6] >> str_param[7] >> str_param[8] >> str_param[9];
-            scene.materials.push_back(MaterialType(Vec3(std::stof(str_param[0]), std::stof(str_param[1]), std::stof(str_param[2])), Vec3(std::stof(str_param[3]), std::stof(str_param[4]), std::stof(str_param[5])), std::stof(str_param[6]), std::stof(str_param[7]), std::stof(str_param[8]), std::stof(str_param[9])));
+            iss >> str_param[0] >> str_param[1] >> str_param[2] >> str_param[3] >> str_param[4] >> str_param[5] >> str_param[6] >> str_param[7] >> str_param[8] >> str_param[9] >> str_param[10] >> str_param[11];
+            scene.materials.push_back(MaterialType(Vec3(std::stof(str_param[0]), std::stof(str_param[1]), std::stof(str_param[2])), Vec3(std::stof(str_param[3]), std::stof(str_param[4]), std::stof(str_param[5])), std::stof(str_param[6]), std::stof(str_param[7]), std::stof(str_param[8]), std::stof(str_param[9]), std::stof(str_param[10]), std::stof(str_param[11])));
         }
         else if (subs == "sphere") {
             iss >> str_param[0] >> str_param[1] >> str_param[2] >> str_param[3];
@@ -263,6 +268,9 @@ int raycast(std::string filename) {
     ray.position = scene.eyePosition;
     for (int j = 0; j < scene.imageSize.y; j++) {
         for (int i = 0; i < scene.imageSize.x; i++) {
+            if (i == 1077 && j == 311) {
+                 std::cout << "here\n";
+            }
             point = scene.viewingWindow.ul + deltaH * (float)i + deltaV * (float)j;
             ray.direction = (point - scene.eyePosition).normal();
             vecColor = traceRay(scene, ray, i, j);

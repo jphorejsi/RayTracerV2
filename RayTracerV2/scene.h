@@ -7,14 +7,6 @@
 #include "bump.h"
 #include "depthcue.h"
 
-//struct DepthCueType;
-//struct LightType;
-//struct AttLightType;
-//struct MaterialType;
-//struct TextureType;
-//struct TriangleType;
-//struct BumpType;
-
 
 struct ViewingWindowType {
 	float width, height;

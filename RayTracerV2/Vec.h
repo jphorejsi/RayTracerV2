@@ -39,4 +39,10 @@ struct Vec3 {
     bool operator==(const Vec3& v) const {
         return this->x == v.x && this->y == v.y && this->z == v.z;
     }
+    Vec3& operator+=(const Vec3& v) {
+        this->x += v.x;
+        this->y += v.y;
+        this->z += v.z;
+        return *this; // Return the current object by reference
+    }
 };

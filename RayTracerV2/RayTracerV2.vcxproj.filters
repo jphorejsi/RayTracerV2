@@ -30,13 +30,7 @@
     <ClCompile Include="textures.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="depthcue.h">
-      <Filter>Header Files</Filter>
-    </ClCompile>
     <ClCompile Include="bump.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="depthcue.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ray.cpp">
