@@ -1,7 +1,6 @@
 #include "lights.h"
 #include "textures.h"
 #include "bump.h"
-#include "depthcue.h"
 #include "scene.h"
 
 const MaterialType& getMaterial(const SceneType& scene, const std::string objectType, const int objectNumber) {

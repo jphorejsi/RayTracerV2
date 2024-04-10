@@ -130,6 +130,7 @@
     <ClCompile Include="bump.cpp" />
     <ClCompile Include="lights.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="scene.cpp" />
     <ClCompile Include="ray.cpp" />
     <ClCompile Include="sphere.cpp" />
     <ClCompile Include="textures.cpp" />

@@ -5,7 +5,6 @@
 #include "triangle.h"
 #include "textures.h"
 #include "bump.h"
-#include "depthcue.h"
 
 
 struct ViewingWindowType {
@@ -31,4 +30,8 @@ struct SceneType {
 	std::vector<Vec2> textureCordinates;
 	std::vector<BumpType> bumps;
 	DepthCueType depthCue;
+	bool autoSS = false;
 };
+
+
+int parse(const std::string filename, SceneType &scene);
