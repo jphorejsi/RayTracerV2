@@ -15,4 +15,5 @@ struct RayType {
 };
 
 std::tuple<std::string, int, float> intersectionCheck(const SceneType& scene, const RayType& ray, const int exclusion);
+std::tuple<std::string, int, float> intersectionCheck(const SceneType& scene, const RayType& ray);
 float distance(const Vec3& point1, const Vec3& point2);

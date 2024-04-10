@@ -6,6 +6,81 @@
 #include "sstream"
 
 SceneType scene;
+#define MAX_DEPTH 5
+
+Vec3 recursiveTraceRay(SceneType &scene, const RayType &ray, int depth, bool flagEnter, float dist, std::string shape, int currentObj) {
+    if (depth > MAX_DEPTH || shape == "None") {
+        return Vec3(0, 0, 0);
+    }
+    // compute the reflection ray equation and the Fresnel reflectance coefficient
+    const Vec3& ray_dir = ray.direction.normal();
+    const MaterialType& mtl = getMaterial(scene, shape, currentObj);
+    Vec3 p = ray.position;
+    Vec3 N = getNormal(scene, shape, currentObj, p);
+    float eta_i = 1.0; // incident from air
+    float eta_t = mtl.eta;
+    if (!flagEnter) {
+        // if exiting, revsere normal vector N
+        // and exchange eta_i and eta_t
+        N = N * -1;
+        eta_i = eta_t;
+        eta_t = 1.0;
+    }
+    float F_0 = pow((eta_t - eta_i) / (eta_t + eta_i), 2);
+    float F_r = F_0 + (1 - F_0) * pow(1 - N.dot(ray_dir), 5);
+    // compute the reflective ray
+    Vec3 R = (N * 2 * N.dot(ray_dir) - ray_dir).normal();
+    std::string next_obj_type;
+    int next_obj_idx;
+    float ray_t; // material index
+    RayType ray_reflected(p, R);
+    // initialize the color for the reflective ray
+    Vec3 res_color_reflect(0, 0, 0);
+    // loop for all objects
+    // check whether there is an intersection
+    std::tie(next_obj_type, next_obj_idx, ray_t) = intersectionCheck(scene, ray_reflected);
+    // new intersection point
+    // new normal vector N, at the new intersection point
+    Vec3 new_p = ray_reflected.position + ray_reflected.direction * ray_t;
+    if (next_obj_type != "None")
+    {
+        res_color_reflect = shadeRay(scene, next_obj_type, next_obj_idx, new_p, ray_reflected);
+    }
+    // new incident ray
+    Vec3 new_dir = ray_reflected.direction.normal() * -1;
+    RayType new_ray_incident(new_p, new_dir);
+    // recursive trace the reflective ray
+    res_color_reflect = res_color_reflect * pow(F_r, depth) + recursiveTraceRay(scene, new_ray_incident, depth + 1, flagEnter, dist + ray_t, next_obj_type, next_obj_idx);
+
+    // initialize the response color for the transmitted ray
+    Vec3 res_color_transmit(0, 0, 0);
+    // check the existence of the transmitted ray
+    if (std::abs(1 - mtl.alpha) < 1e-6 || pow(N.dot(ray_dir), 2) < 1 - pow(eta_t / eta_i, 2))
+    {
+        // if opaque or total internal reflection
+        // there is no tranmitted ray
+        return res_color_reflect;
+    }
+    // compute the tranmitted ray
+    Vec3 T = -N * sqrt(1 - pow(eta_i / eta_t, 2) * (1 - pow(N.dot(ray_dir), 2))) + (N * N.dot(ray_dir) - ray_dir) * (eta_i / eta_t);
+    RayType ray_tranmitted(p, T);
+    // loop for all objects
+    // check whether there is an intersection
+    std::tie(next_obj_type, next_obj_idx, ray_t) = intersectionCheck(scene, ray_tranmitted);
+    // new intersection point
+    // new normal vector N, at the new intersection point
+    Vec3 new_p_transmit = ray_tranmitted.position + ray_tranmitted.direction * ray_t;
+    if (next_obj_type != "None")
+    {
+        res_color_transmit = shadeRay(scene, next_obj_type, next_obj_idx, new_p_transmit ,ray_tranmitted);
+    }
+    // new incident ray
+    Vec3 new_dir_transmit = ray_tranmitted.direction.normal() * -1;
+    RayType new_ray_incident_transmit(new_p_transmit, new_dir_transmit);
+    // recursive trace the transmitted ray
+    res_color_transmit = res_color_transmit * pow(1 - F_r, depth) * std::exp(-mtl.alpha * dist) + recursiveTraceRay(scene, new_ray_incident_transmit, depth + 1, !flagEnter, dist + ray_t, next_obj_type, next_obj_idx);
+    return res_color_reflect + res_color_transmit;
+}
 
 Vec3 traceRay(SceneType &scene, const RayType &ray, const int i, const int j) {
     Vec3 colorToReturn;
@@ -23,7 +98,6 @@ Vec3 traceRay(SceneType &scene, const RayType &ray, const int i, const int j) {
     }
     return colorToReturn;
 }
-
 
 int raycast(std::string filename) {
     ColorType* arr = new ColorType[scene.imageSize.x * scene.imageSize.y];
