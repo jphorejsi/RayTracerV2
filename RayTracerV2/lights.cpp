@@ -58,7 +58,9 @@ Vec3 lightShade(SceneType &scene, const RayType &ray, Vec3 &intersectionPoint, c
         specular = scene.materials[scene.triangles[objectNumber].materialId].os * scene.materials[scene.triangles[objectNumber].materialId].ks * pow(std::max(float(0), N.dot(H)), scene.materials[scene.triangles[objectNumber].materialId].n);
     }
     Vec3 color = diffuse + specular;
-    color += Vec3(color.x * light.color.x, color.y * light.color.y, color.z * light.color.z);
+    color.x *= light.color.x;
+    color.y *= light.color.y;
+    color.z *= light.color.z;
     return color * float(shadowStatus(scene, RayType(intersectionPoint, L), light, objectNumber));
 }
 

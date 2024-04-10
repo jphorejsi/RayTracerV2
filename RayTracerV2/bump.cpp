@@ -19,12 +19,13 @@ const BumpType& getNormalMap(const SceneType& scene, const std::string objectTyp
 
 Vec3 normalMapping(const SceneType& scene, const std::string objectType, const int objectNumber, Vec3& intersectionPoint) {
     Vec2 TC = getTextureCoordinate(scene, objectType, objectNumber, intersectionPoint);
+    Vec3 N;
     TextureType texture = getTexture(scene, objectType, objectNumber);
     int x = TC.x * (texture.width - 1); //i
     int y = TC.y * (texture.height - 1); //j
     Vec3 m = getNormalMap(scene, objectType, objectNumber).bumpArray[x][y];
     if (objectType == "Sphere") {
-        Vec3 N = getNormal(scene, objectType, objectNumber, intersectionPoint);
+        N = getNormal(scene, objectType, objectNumber, intersectionPoint);
         Vec3 T = Vec3(-N.y / sqrt(N.x * N.x + N.y * N.y), N.x / sqrt(N.x * N.x + N.y + N.y), 0.0);
         Vec3 B = N.cross(T);
         float nx = T.x * m.x + B.x * m.y + N.x * m.z;
@@ -33,7 +34,7 @@ Vec3 normalMapping(const SceneType& scene, const std::string objectType, const i
         return Vec3(nx, ny, nz);
     }
     else {
-        Vec3 N = getNormal(scene, objectType, objectNumber, intersectionPoint);
+        N = getNormal(scene, objectType, objectNumber, intersectionPoint);
         TriangleType triangle = scene.triangles[objectNumber];
         Vec3 p0 = scene.vertices[triangle.v0Index - 1];
         Vec3 p1 = scene.vertices[triangle.v1Index - 1];
