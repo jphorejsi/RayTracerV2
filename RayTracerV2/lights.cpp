@@ -10,25 +10,22 @@ const MaterialType& getMaterial(const SceneType& scene, const std::string object
     else return scene.materials[scene.triangles[objectNumber].materialId];
 }
 
-int shadowStatus(const SceneType &scene, const RayType &ray, const LightType &light, const int excliusion) {
+float shadowFlag(const SceneType &scene, const RayType &ray, const LightType &light, const int excliusion) {
+    float sum = 1;
     std::string objectType;
     int objectNumber;
     float rayT;
-    std::tie(objectType, objectNumber, rayT) = intersectionCheck(scene, ray, excliusion);
-    if (objectType != "None") {
-        if (light.type == 1) {
-            float maxT = (light.position.x - ray.position.x) / ray.direction.x;
-            if (rayT > 0 && rayT < maxT) {
-                return 0;
-            }
-        }
-        else {
-            if (rayT > 0) {
-                return 0;
-            }
+    for (auto s : scene.spheres) {
+        if (raySphereIntersection(scene, s.Id, ray)) {
+            sum = sum * (1 - scene.materials[s.materialId].alpha); //or alpha
         }
     }
-    return 1;
+    for (int i = 0; i < scene.trianglesSize; i++) {
+        if (rayTriangleIntersection(scene, scene.triangles[i].Id, ray)) {
+            return 0;
+        }
+    }
+    return sum;
 }
 
 Vec3 lightShade(SceneType &scene, const RayType &ray, Vec3 &intersectionPoint, const LightType &light, const std::string objectType, const int objectNumber) {
@@ -61,7 +58,8 @@ Vec3 lightShade(SceneType &scene, const RayType &ray, Vec3 &intersectionPoint, c
     color.x *= light.color.x;
     color.y *= light.color.y;
     color.z *= light.color.z;
-    return color * float(shadowStatus(scene, RayType(intersectionPoint, L), light, objectNumber));
+    float shadowF = float(shadowFlag(scene, RayType(intersectionPoint, L), light, objectNumber));
+    return color * shadowF;
 }
 
 

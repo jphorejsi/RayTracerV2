@@ -1,7 +1,7 @@
 #include "ray.h"
 #include "scene.h"
 
-     std::tuple<std::string, int, float> intersectionCheck(const SceneType& scene, const RayType& ray, const int exclude_id) {
+    std::tuple<std::string, int, float> intersectionCheck(const SceneType& scene, const RayType& ray, const int exclude_id) {
     float min_t = 100000;
     float temp_t;
     int obj_idx = -1;
@@ -207,8 +207,80 @@ std::tuple<std::string, int, float> intersectionCheck(const SceneType& scene, co
             continue;
         }
     }
-
     return std::make_tuple(obj_type, obj_idx, min_t);
+}
+
+bool raySphereIntersection(const SceneType& scene, int id, const RayType& ray) {
+    float discriminant;
+    Vec3 ray_center, obj_center;
+    Vec3 dir;
+    SphereType s = scene.spheres[id]; 
+    ray_center = ray.position;
+    obj_center = s.position;
+    dir = ray.direction;
+    float B = 2 * (ray.direction.x * (ray.position.x - s.position.x) + ray.direction.y * (ray.position.y - s.position.y) + ray.direction.z * (ray.position.z - s.position.z));
+    float C = pow(ray.position.x - s.position.x, 2) + pow(ray.position.y - s.position.y, 2) + pow(ray.position.z - s.position.z, 2) - pow(s.radius, 2);
+    discriminant = pow(B, 2) - 4 * C;
+    if (discriminant > -1e-6) {
+        float t_1 = (-B + sqrt(discriminant)) / 2;
+        float t_2 = (-B - sqrt(discriminant)) / 2;
+        float min = 0.0001;
+        float max = FLT_MAX;
+        if (t_1 > t_2) {
+            std::swap(t_1, t_2);
+        }
+        if (t_1 < min || t_1 > max) {
+            if (t_2 < min || t_2 > max) {
+                //no intersection
+                return false;
+            }
+
+            // Found intersection
+            return true;
+        }
+        // found intersection point
+        return true;
+    }
+    return false;
+}
+
+bool rayTriangleIntersection(const SceneType& scene, int id, const RayType& ray) {
+    float min_t = 100000;
+    TriangleType t = scene.triangles[id]; // y minus 1
+    Vec3 ray_center = ray.position;
+    Vec3 dir = ray.direction;
+    Vec3 p0 = scene.vertices[t.v0Index - 1];
+    Vec3 p1 = scene.vertices[t.v1Index - 1];
+    Vec3 p2 = scene.vertices[t.v2Index - 1];
+    Vec3 e1 = p1 - p0;
+    Vec3 e2 = p2 - p0;
+    Vec3 n = e1.cross(e2).normal();
+    float A = n.x;
+    float B = n.y;
+    float C = n.z;
+    float D = -A * p0.x - B * p0.y - C * p0.z;
+    float discriminant = A * dir.x + B * dir.y + C * dir.z;
+    if (std::abs(discriminant) < 1e-6) {
+        return false;
+    }
+    float ray_t = -(A * ray_center.x + B * ray_center.y + C * ray_center.z + D) / discriminant;
+    if (ray_t < 0) {
+        return false;
+    }
+    Vec3 p = ray.position + ray.direction * ray_t;
+    Vec3 bayrcentric_coordinates = t.barycentric(scene, p);
+    float alpha = bayrcentric_coordinates.x;
+    float beta = bayrcentric_coordinates.y;
+    float gamma = bayrcentric_coordinates.z;
+    if (alpha > -1e-6 && alpha < 1 && beta > -1e-6 && beta < 1 && gamma > -1e-6 && gamma < 1) {
+        if (ray_t < min_t && t.Id != id) {
+            return true;
+        }
+    }
+    else {
+        return false;
+    }
+    return false;
 }
 
 float distance(const Vec3& point1, const Vec3& point2) {
