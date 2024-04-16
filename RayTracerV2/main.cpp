@@ -21,7 +21,10 @@ Vec3 traceRayRecursive(RayType ray, SceneType scene ,int maxRecursion, float eta
     float rayT;
     std::tie(shape, currentObj, rayT) = intersectionCheck(scene, ray, -1);
     Vec3 intersectionPoint = ray.position + ray.direction * rayT;
-    if (shape != "None") {
+    if (shape == "Triangle") {
+        return shadeRay(scene, shape, currentObj, intersectionPoint, ray);
+    }
+    else if (shape != "None") {
         Vec3 N = getNormal(scene, shape, currentObj, intersectionPoint).normal();
         const MaterialType& mtl = getMaterial(scene, shape, currentObj);
         // Calculate intersection point
@@ -84,22 +87,7 @@ Vec3 traceRayRecursive(RayType ray, SceneType scene ,int maxRecursion, float eta
 }
 
 Vec3 traceRay(SceneType &scene, const RayType &ray, const int i, const int j) {
-    Vec3 colorToReturn;
-    int currentObj = -1;
-    std::string shape = "None";
-    float rayT;
-    std::tie(shape, currentObj, rayT) = intersectionCheck(scene, ray, -1);
-    Vec3 intersectionPoint = ray.position + ray.direction * rayT;
-    if (shape == "Triangle") {
-        colorToReturn = shadeRay(scene, shape, currentObj, intersectionPoint, ray);
-    }
-    else if (shape == "Sphere") {
-        //colorToReturn = recursiveTraceRay(scene, RayType(intersectionPoint, ray.direction.normal() * -1), 1, true, 0, shape, currentObj);
-        //RayType ray = RayType(intersectionPoint, ray.direction.normal() * -1);
-        colorToReturn = traceRayRecursive(ray, scene, 10, 1);
-    }
-    else return scene.backgroundColor;
-    return colorToReturn;
+    return Vec3(0, 0, 0);
 }
 
 int raycast(std::string filename) {
@@ -132,10 +120,11 @@ int raycast(std::string filename) {
     ray.position = scene.eyePosition;
     for (int j = 0; j < scene.imageSize.y; j++) {
         for (int i = 0; i < scene.imageSize.x; i++) {
-            if (i == 680 && j == 696) {
+            if (i == 673 && j == 611) {
                 point = scene.viewingWindow.ul + deltaH * (float)i + deltaV * (float)j;
                 ray.direction = (point - scene.eyePosition).normal();
-                vecColor = traceRay(scene, ray, i, j);
+                //vecColor = traceRay(scene, ray, i, j);
+                vecColor = traceRayRecursive(ray, scene, 10, 1);
                 arr[i].r = vecColor.x; arr[i].g = vecColor.y; arr[i].b = vecColor.z;
                 outfile << int(arr[i].r * 255) << " " << int(arr[i].g * 255) << " " << int(arr[i].b * 255) << "\n";
            }
