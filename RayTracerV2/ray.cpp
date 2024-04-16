@@ -224,7 +224,7 @@ bool raySphereIntersection(const SceneType& scene, int id, const RayType& ray) {
     if (discriminant > -1e-6) {
         float t_1 = (-B + sqrt(discriminant)) / 2;
         float t_2 = (-B - sqrt(discriminant)) / 2;
-        float min = 0.0001;
+        float min = 0.001;
         float max = FLT_MAX;
         if (t_1 > t_2) {
             std::swap(t_1, t_2);

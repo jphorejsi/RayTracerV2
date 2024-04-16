@@ -120,14 +120,14 @@ int raycast(std::string filename) {
     ray.position = scene.eyePosition;
     for (int j = 0; j < scene.imageSize.y; j++) {
         for (int i = 0; i < scene.imageSize.x; i++) {
-            if (i == 673 && j == 611) {
+            //if (i == 672 && j == 611) {
                 point = scene.viewingWindow.ul + deltaH * (float)i + deltaV * (float)j;
                 ray.direction = (point - scene.eyePosition).normal();
                 //vecColor = traceRay(scene, ray, i, j);
                 vecColor = traceRayRecursive(ray, scene, 10, 1);
                 arr[i].r = vecColor.x; arr[i].g = vecColor.y; arr[i].b = vecColor.z;
                 outfile << int(arr[i].r * 255) << " " << int(arr[i].g * 255) << " " << int(arr[i].b * 255) << "\n";
-           }
+          // }
         }
         std::cout << j << std::endl;
     }
