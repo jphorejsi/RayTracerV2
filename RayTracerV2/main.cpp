@@ -55,7 +55,6 @@ int raycast(std::string filename) {
             //if (i == 304 && j == 335) {
             //     std::cout << "here\n";
             //}
-            i = 247; j = 247;
             point = scene.viewingWindow.ul + deltaH * (float)i + deltaV * (float)j;
             ray.direction = (point - scene.eyePosition).normal();
             vecColor = traceRay(scene, ray, i, j);
