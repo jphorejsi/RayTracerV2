@@ -17,8 +17,8 @@ struct AttLightType : LightType {
 
 struct MaterialType {
 	Vec3 od, os;
-	float ka, kd, ks, n, alpha, eta;
-	MaterialType(Vec3 odI = Vec3(), Vec3 osI = Vec3(), float kaI = 0, float kdI = 0, float ksI = 0, float nI = 0, float alphaI = 1, float etaI = 1) : od(odI), os(osI), ka(kaI), kd(kdI), ks(ksI), n(nI), alpha(alphaI), eta(etaI) { // might be changed
+	float ka, kd, ks, n;
+	MaterialType(Vec3 odI = Vec3(), Vec3 osI = Vec3(), float kaI = 0, float kdI = 0, float ksI = 0, float nI = 0, float alphaI = 1, float etaI = 1) : od(odI), os(osI), ka(kaI), kd(kdI), ks(ksI), n(nI) { // might be changed
 	}
 };
 

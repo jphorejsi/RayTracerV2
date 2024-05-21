@@ -71,8 +71,9 @@ int parse(const std::string filename, SceneType &scene) {
             scene.imageSize = Vec2(std::stoi(str_param[0]), std::stoi(str_param[1]));
         }
         else if (subs == "mtlcolor") {
-            iss >> str_param[0] >> str_param[1] >> str_param[2] >> str_param[3] >> str_param[4] >> str_param[5] >> str_param[6] >> str_param[7] >> str_param[8] >> str_param[9] >> str_param[10] >> str_param[11];
-            scene.materials.push_back(MaterialType(Vec3(std::stof(str_param[0]), std::stof(str_param[1]), std::stof(str_param[2])), Vec3(std::stof(str_param[3]), std::stof(str_param[4]), std::stof(str_param[5])), std::stof(str_param[6]), std::stof(str_param[7]), std::stof(str_param[8]), std::stof(str_param[9]), std::stof(str_param[10]), std::stof(str_param[11])));
+            iss >> str_param[0] >> str_param[1] >> str_param[2] >> str_param[3] >> str_param[4] >> str_param[5] >> str_param[6] >> str_param[7] >> str_param[8] >> str_param[9];
+            MaterialType newMat = MaterialType(Vec3(std::stof(str_param[0]), std::stof(str_param[1]), std::stof(str_param[2])), Vec3(std::stof(str_param[3]), std::stof(str_param[4]), std::stof(str_param[5])), std::stof(str_param[6]), std::stof(str_param[7]), std::stof(str_param[8]), std::stof(str_param[9]));
+            scene.materials.push_back(newMat);
         }
         else if (subs == "sphere") {
             iss >> str_param[0] >> str_param[1] >> str_param[2] >> str_param[3];

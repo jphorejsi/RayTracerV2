@@ -18,9 +18,6 @@ Vec3 traceRay(SceneType &scene, const RayType &ray, const int i, const int j) {
         colorToReturn = shadeRay(scene, shape, currentObj, intersectionPoint, ray);
     }
     else return scene.backgroundColor;
-    if (shape == "sphere") {
-        //colorToReturn + colorToReturn + recursiveTraceRay(scene, RayType(intersectionPoint, -ray.direction.normal()), 1, true, 0, shape, currentObj);
-    }
     return colorToReturn;
 }
 
@@ -55,9 +52,10 @@ int raycast(std::string filename) {
     ray.position = scene.eyePosition;
     for (int j = 0; j < scene.imageSize.y; j++) {
         for (int i = 0; i < scene.imageSize.x; i++) {
-            if (i == 1077 && j == 311) {
-                 std::cout << "here\n";
-            }
+            //if (i == 304 && j == 335) {
+            //     std::cout << "here\n";
+            //}
+            i = 247; j = 247;
             point = scene.viewingWindow.ul + deltaH * (float)i + deltaV * (float)j;
             ray.direction = (point - scene.eyePosition).normal();
             vecColor = traceRay(scene, ray, i, j);

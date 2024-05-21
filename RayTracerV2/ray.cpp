@@ -58,7 +58,7 @@ std::tuple<std::string, int, float> intersectionCheck(const SceneType& scene, co
             continue;
         }
         ray_t = -(A * ray_center.x + B * ray_center.y + C * ray_center.z + D) / determinant;
-        if (ray_t < 0) {
+        if (ray_t < 1e-5) {
             continue;
         }
         p = ray.position + ray.direction * ray_t;
