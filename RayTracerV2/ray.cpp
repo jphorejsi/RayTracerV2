@@ -175,7 +175,7 @@ std::tuple<std::string, int, float> intersectionCheck(const SceneType& scene, co
         float alpha = bayrcentric_coordinates.x;
         float beta = bayrcentric_coordinates.y;
         float gamma = bayrcentric_coordinates.z;
-        if (alpha > -1e-4 && alpha < 1 + 1e-4 && beta > -1e-4 && beta < 1 + 1e-4 && gamma > -1e-4 && gamma < 1 + 1e-4) {
+        if (alpha > -1e-5 && alpha < 1 + 1e-5 && beta > -1e-5 && beta < 1 + 1e-5 && gamma > -1e-5 && gamma < 1 + 1e-5) {
             if (ray_t < min_t && t.Id != exclude_id) {
                 min_t = ray_t;
                 obj_idx = t.Id;

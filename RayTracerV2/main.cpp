@@ -55,6 +55,7 @@ int raycast(std::string filename) {
             //if (i == 304 && j == 335) {
             //     std::cout << "here\n";
             //}
+            //i = 247; j = 158;
             point = scene.viewingWindow.ul + deltaH * (float)i + deltaV * (float)j;
             ray.direction = (point - scene.eyePosition).normal();
             vecColor = traceRay(scene, ray, i, j);
@@ -68,7 +69,7 @@ int raycast(std::string filename) {
 }
 
 int main(int argc, char** argv) {
-    //scene.autoSS = true;
+    scene.autoSS = true;
     parse("test.txt", scene);
     raycast("test.txt");
     std::cout << "done\n";
